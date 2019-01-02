@@ -13,9 +13,12 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+########################################################
+##! CAMBIOS HECHOS POR MI COMENTADOS DESPUES CON ##!
+########################################################
 
-
-rfitness <- function(g, c= 0.5,
+rfitness <- function(g, c= 0.5, 
+                     k= 1, ##! Valor 1 como predeterminado?
                      sd = 1,
                      mu = 1,
                      reference = "random", ## "random", "max", or the vector,
@@ -30,7 +33,8 @@ rfitness <- function(g, c= 0.5,
                                  ## wt_is_1 = divide
                      min_accessible_genotypes = NULL,
                      accessible_th = 0,
-                     truncate_at_0 = TRUE) {
+                     truncate_at_0 = TRUE,
+                     Nk_model = FALSE) {   ##!Por defecto har?? Mount Fuji
     ## Like Franke et al., 2011 and others of Krug. Very similar to Greene
     ## and Crona, 2014. And this allows moving from HoC to purely additive
     ## changing c and sd.
@@ -39,32 +43,51 @@ rfitness <- function(g, c= 0.5,
     ##    - do not generate a matrix of genotypes but a matrix of ordered genot.
     wt_is_1 = match.arg(wt_is_1)
     if(is_null_na(g)) stop("Number of genes argument (g) is null or NA")
+    if(!inherits(Nk_model,"logical")) stop("Nk_model accept only logical values")
+    if(k>=g) stop("k can not be equal or greater than g") 
+    if(k<0) stop("k can not be lower than 0")
     m <- generate_matrix_genotypes(g)
     done <- FALSE
     ## attempts <- 0 ## for debugging/tracking purposes
     while(!done) {
         ## attempts <- attempts + 1
-        f_r <- rnorm(nrow(m), mean = mu, sd = sd)
-        if(inherits(reference, "character") && length(reference) == 1) {
-            if(reference == "random") {
-                referenceI <- m[sample(nrow(m), 1), ]
-            } else if(reference == "max") {
-                referenceI <- rep(1, g)
-            } else if(reference == "random2") {
-                referenceI <- create_eq_ref(g)
-            }
-        } else {
-            referenceI <- reference
-            }
-        d_reference <- apply(m, 1, function(x) sum(abs(x - referenceI)))
-        f_det <- -c * d_reference
-        ## f_det <- rowSums(m) * slope/nrow(m) ## this is Greene and Krona
-        fi <- f_r + f_det
+      
+
+       if(Nk_model == TRUE) {
+            #######################! Puede no ser necesario!###################
+            sd <- ((k+1)*sd^2)/(g*(k+1+2*(k+2)*log(k+1))) ##!Log() es neperiano.
+            mu <- mu + sd*sqrt((2*log(k+1))/(k+1)) ##!Posiblemente deberiamos hacer funcion a parte??? Feo
+        }
+  
+      if(Nk_model == TRUE) {
+        intM <- generate_interaction_matrix(g,k)
+        fi <- apply(m,1,function(x) F_applyer(x,g,k,intM))
+      } else {
+    
+          f_r <- rnorm(nrow(m), mean = mu, sd = sd)
+          if(inherits(reference, "character") && length(reference) == 1) {
+              if(reference == "random") {
+                  referenceI <- m[sample(nrow(m), 1), ]
+              } else if(reference == "max") {
+                  referenceI <- rep(1, g)
+              } else if(reference == "random2") {
+                  referenceI <- create_eq_ref(g)
+              }
+          } else {
+              referenceI <- reference
+              }
+          d_reference <- apply(m, 1, function(x) sum(abs(x - referenceI)))
+          f_det <- -c * d_reference
+          ## f_det <- rowSums(m) * slope/nrow(m) ## this is Greene and Krona
+          fi <- f_r + f_det
+      }
         
         if(!is.null(scale)) {
             fi <- (fi - min(fi))/(max(fi) - min(fi))
             fi <- scale[1] + fi * (scale[2] - scale[1])
         }
+        
+        
         if(wt_is_1 == "divide") {
             ## We need to shift to avoid ratios involving negative numbers and
             ## we need to avoid having any fitness at 0, specially the wt.  If
@@ -128,7 +151,3 @@ create_eq_ref <- function(g) {
     ref <- c(rep(1, nm), rep(0, g - nm))
     sample(ref)
 }
-
-
-
-

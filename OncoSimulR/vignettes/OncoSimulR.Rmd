@@ -4,8 +4,8 @@ author: "
 
          Ramon Diaz-Uriarte\\
 
-         Dept. Biochemistry, Universidad Autónoma de Madrid, Instituto de
-         Investigaciones Biomédicas 'Alberto Sols' (UAM-CSIC), Madrid,
+         Dept. Biochemistry, Universidad Aut??noma de Madrid, Instituto de
+         Investigaciones Biom??dicas 'Alberto Sols' (UAM-CSIC), Madrid,
          Spain.\\ 
 		 
 		 <rdiaz02@gmail.com>, <http://ligarto.org/rdiaz>

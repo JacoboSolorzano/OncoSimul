@@ -594,6 +594,69 @@ peak_valley <- function(x) {
 
 
 
+###############################################
+################Codigo nuestro#################
+###############################################
+
+generate_interaction_matrix <- function(g, k) {
+  
+  ##! Generates a matrix of as many random numbers as neccesary. Each gene has 2**(k+1) possible combinations
+  ##! The rows will be the gene names
+  ##! the columns will be all posible gene combinations
+  m <- matrix(runif(g*2**(k+1)), nrow = g)
+  rnames <- LETTERS[1:g] ##! Gets capital letters for gene names, just like in genotype matrix
+  fornames <- generate_matrix_genotypes(k+1) ##! The gene combinations in this function are used as the column names 
+  cnames <- c()
+  for (i in 1:2**(k+1)){
+      cnames <- c(cnames, paste(fornames[i, ], collapse = ""))
+  }
+  colnames(m) <- cnames
+  rownames(m) <- rnames
+  return(m)
+}
+
+
+F_checker <- function(x, intM){
+  
+  ##! x: vector. First element: the gene whose genotype you want.
+  ##! Other components: the k genes that affect the gene in the first position 
+  ##! for that we: use the name of the first element of the vector as the row name
+  row <- paste0(names(x[1]))
+  ##! the column name is the combination of genotypes of which the gene depends(itself and k other genes)
+  column <- paste0(x, collapse = "")
+  return(intM[row, column])
+}
+
+
+F_applyer <- function(x, ##! The genotype to check
+                      g, ##! Number of genes
+                      k, ##| Size of interaction
+                      intM, ##! Interaction matrix
+                      geno_fitness = 0){ ##! Fitness calculated for the genotype
+  
+  names(x) <- colnames(m) ##! m is the genotype matrix generated with rfitness
+  for(i in c(1:g)){
+    if(i+k > g){
+      ##! When i+k is greater than g, takes genes from the start for cyclicity
+      geno_fitness = geno_fitness + F_checker(c(x[i:g],x[1:(i+k-g)]), intM)
+      
+      ##! For paranoia:
+        #print("Fmero is")
+        #print(c(x[i:g],x[1:(i+k-g)]))
+    }
+    else{
+      ##! Cogen los Fmeros de k+1 empezando desde el primero
+      geno_fitness = geno_fitness + F_checker(x[i:(i+k)],intM)
+      
+      ##! For paranoia:
+        #print("Fmero is"))
+        #print(x[i:(i+k)])
+    }
+  }
+  return(geno_fitness/g) ##! divide genotype by the number of genes
+}
+
+
 ## For the future
 ## ## data.frame (two columns: genotype with "," and Fitness) -> fitness graph (DAG)
 ## ## Return an adj matrix of the fitness graph from a fitness
