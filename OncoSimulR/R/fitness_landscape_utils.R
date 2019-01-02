@@ -595,7 +595,7 @@ peak_valley <- function(x) {
 
 
 ###############################################
-################Codigo nuestro#################
+#              Nk implementations             #
 ###############################################
 
 generate_interaction_matrix <- function(g, k) {
@@ -603,7 +603,7 @@ generate_interaction_matrix <- function(g, k) {
   ##! Generates a matrix of as many random numbers as neccesary. Each gene has 2**(k+1) possible combinations
   ##! The rows will be the gene names
   ##! the columns will be all posible gene combinations
-  m <- matrix(runif(g*2**(k+1)), nrow = g)
+  m <- matrix(rnorm(g*2**(k+1)), nrow = g)
   rnames <- LETTERS[1:g] ##! Gets capital letters for gene names, just like in genotype matrix
   fornames <- generate_matrix_genotypes(k+1) ##! The gene combinations in this function are used as the column names 
   cnames <- c()
@@ -634,7 +634,7 @@ F_applyer <- function(x, ##! The genotype to check
                       intM, ##! Interaction matrix
                       geno_fitness = 0){ ##! Fitness calculated for the genotype
   
-  names(x) <- colnames(m) ##! m is the genotype matrix generated with rfitness
+  names(x) <- LETTERS[1:g] ##! m is the genotype matrix generated with rfitness
   for(i in c(1:g)){
     if(i+k > g){
       ##! When i+k is greater than g, takes genes from the start for cyclicity

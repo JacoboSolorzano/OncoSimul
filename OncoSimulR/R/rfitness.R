@@ -13,12 +13,9 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-########################################################
-##! CAMBIOS HECHOS POR MI COMENTADOS DESPUES CON ##!
-########################################################
 
 rfitness <- function(g, c= 0.5, 
-                     k= 1, ##! Valor 1 como predeterminado?
+                     k= 1, ##! size of interacion
                      sd = 1,
                      mu = 1,
                      reference = "random", ## "random", "max", or the vector,
@@ -51,13 +48,6 @@ rfitness <- function(g, c= 0.5,
     ## attempts <- 0 ## for debugging/tracking purposes
     while(!done) {
         ## attempts <- attempts + 1
-      
-
-       if(Nk_model == TRUE) {
-            #######################! Puede no ser necesario!###################
-            sd <- ((k+1)*sd^2)/(g*(k+1+2*(k+2)*log(k+1))) ##!Log() es neperiano.
-            mu <- mu + sd*sqrt((2*log(k+1))/(k+1)) ##!Posiblemente deberiamos hacer funcion a parte??? Feo
-        }
   
       if(Nk_model == TRUE) {
         intM <- generate_interaction_matrix(g,k)
