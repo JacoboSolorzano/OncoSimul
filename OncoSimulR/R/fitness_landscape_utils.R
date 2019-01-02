@@ -598,12 +598,12 @@ peak_valley <- function(x) {
 #              Nk implementations             #
 ###############################################
 
-generate_interaction_matrix <- function(g, k) {
+generate_interaction_matrix <- function(g, k, mu, sd) {
   
   ##! Generates a matrix of as many random numbers as neccesary. Each gene has 2**(k+1) possible combinations
   ##! The rows will be the gene names
   ##! the columns will be all posible gene combinations
-  m <- matrix(rnorm(g*2**(k+1)), nrow = g)
+  m <- matrix(rnorm(g*2**(k+1), mean = mu, sd = sd), nrow = g)
   rnames <- LETTERS[1:g] ##! Gets capital letters for gene names, just like in genotype matrix
   fornames <- generate_matrix_genotypes(k+1) ##! The gene combinations in this function are used as the column names 
   cnames <- c()

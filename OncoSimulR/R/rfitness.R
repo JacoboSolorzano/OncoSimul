@@ -50,7 +50,7 @@ rfitness <- function(g, c= 0.5,
         ## attempts <- attempts + 1
   
       if(Nk_model == TRUE) {
-        intM <- generate_interaction_matrix(g,k)
+        intM <- generate_interaction_matrix(g,k,mu,sd)
         fi <- apply(m,1,function(x) F_applyer(x,g,k,intM))
       } else {
     
