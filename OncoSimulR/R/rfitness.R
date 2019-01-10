@@ -31,7 +31,7 @@ rfitness <- function(g, c= 0.5,
                      min_accessible_genotypes = NULL,
                      accessible_th = 0,
                      truncate_at_0 = TRUE,
-                     Nk_model = FALSE) {   ##!Por defecto har?? Mount Fuji
+                     Nk_model = FALSE) {   ##! Mount Fuji as default
     ## Like Franke et al., 2011 and others of Krug. Very similar to Greene
     ## and Crona, 2014. And this allows moving from HoC to purely additive
     ## changing c and sd.

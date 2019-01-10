@@ -5,15 +5,16 @@
 \title{Generate random fitness.}
 
 \description{ Generate random fitness landscapes under a House of Cards,
-  Rough Mount Fuji, or additive model.  }
+  Rough Mount Fuji, NK, or additive model.  }
 
 
 \usage{
 
-rfitness(g, c = 0.5, sd = 1, mu = 1, reference = "random", scale = NULL,
+rfitness(g, c = 0.5, k = 1 sd = 1, mu = 1, reference = "random", scale = NULL,
          wt_is_1 = c("subtract", "divide", "force", "no"),
          log = FALSE, min_accessible_genotypes = NULL,
-         accessible_th = 0, truncate_at_0 = TRUE)
+         accessible_th = 0, truncate_at_0 = TRUE,
+         Nk_model = FALSE)
 }
 
 
@@ -25,6 +26,9 @@ rfitness(g, c = 0.5, sd = 1, mu = 1, reference = "random", scale = NULL,
 
   \item{c}{The decrease in fitness of a genotype per each unit increase
     in Hamming distance from the reference genotype (see \code{reference}).}
+    
+  \item{k}{The degree of epistasis considered for the fitness calculation
+   (see \code{reference}).}
 
   \item{sd}{The standard deviation of the random component (a normal
   distribution of mean \code{mu} and standard deviation \code{sd}).}
@@ -113,6 +117,9 @@ mean \code{mu} and standard deviation \code{sd}).}
   MAGELLAN and some plotting routines can have trouble (specially if you
   log) with values <=0. Or we might have trouble if we want to log the
   fitness.}
+  
+\item{Nk_model}{If TRUE Nk model is implemented instead of
+  Mount Fuji.}
 
 } 
 
@@ -120,7 +127,8 @@ mean \code{mu} and standard deviation \code{sd}).}
 \details{
 
   The model used here follows the Rough Mount Fuji model in Szendro et
-  al., 2013 or Franke et al., 2011. Fitness is given as
+  al., 2013 or Franke et al., 2011. and the Nk model in Szendro et
+  al., 2013 or Ferretti et al., 2016. In Rough Mount Fuji model Fitness is given as
 
   \deqn{f(i) = -c d(i, reference) + x_i}
 
@@ -134,6 +142,19 @@ mean \code{mu} and standard deviation \code{sd}).}
     reference is the genotype with all positions mutated, then we have a
     fully additive model (fitness increases linearly with the number of
     positions mutated).
+    
+  In Nk model Fitness is given as 
+  
+  \deqn{f(i) = 1/gf(S1, S2 ...S1+k) + ... + 1/gf(Si, Si+1 ...Si+k) }
+  
+  where \code{Si} is the gene in position \code{i} and \code{g} is the number of genes of 
+  the genome. This way every position is affected by it's \code{k} neighbours.
+  For ciclicity when \code{(i+n) > g} the first positions are taked into account 
+  implementing this:
+  
+  
+   \deqn{1/gf(Si,... S(i+n)-g, ...S(i+k)-g)
+  
 
   For OncoSimulR, we often want the wildtype to have a mean of
   1. Reasonable settings are \code{mu = 1} and \code{wt_is_1 =
@@ -169,9 +190,15 @@ fitness landscapes. \emph{Journal of Statistical Mehcanics: Theory and
 Franke, J. et al. (2011). Evolutionary accessibility of mutational
 pathways. \emph{PLoS Computational Biology\/}, \bold{7}(8), 1--9.
 
+
+Ferretti, L., Schmiegelt, B., Weinreich, D., Yamauchi, A., Kobayashi,
+Y., Tajima, F., & Achaz, G. (2016). Measuring epistasis in fitness landscapes:
+The correlation of fitness effects of mutations.
+\emph{Journal of Theoretical Biology\/}, \bold{396}, 132???143.
 }
 
-\author{ Ramon Diaz-Uriarte
+\author{modified by Marco Garranzo, Jacobo Solorzano and Barbara Gomez-Tavira.
+        originaly by Ramon Diaz-Uriarte.
 }
 
 \seealso{
@@ -184,7 +211,7 @@ pathways. \emph{PLoS Computational Biology\/}, \bold{7}(8), 1--9.
 
 }
 \examples{
-
+###Rough Mount Fuji
 ## Random fitness for four genes-genotypes,
 ## plotting and simulating an oncogenetic trajectory
 
@@ -193,6 +220,22 @@ plot(r1)
 oncoSimulIndiv(allFitnessEffects(genotFitness = r1))
 
 }
+
+###NK Model
+##random fitnes for four genes with:
+## r2 as the most rugged landscape
+g1 <- 4
+k1 <- (g1 - 1)
+r2<-rfitness(g=g1, k=k1, Nk_model=TRUE)
+plot(r2)
+
+## r3 as the smoothest landscape
+
+g2 <- 4
+k2 <- 0
+r3<-rfitness(g=g2, k=k2, Nk_model=TRUE)
+plot(r3)
+
 
 \keyword{ datagen }
 
