@@ -1,12 +1,9 @@
+trace(OncoSimulR::plotFitnessLandscape, edit = TRUE) #at the end: return(length(maxF))
+#  maxF is a vector which indicates which rows in genot matrix are peaks, so its length is the number
+#of peaks
 
-
-trace(OncoSimulR::plotFitnessLandscape, edit = TRUE) ##! insert at the end "return(length(maxF)" (number of peaks)
-
-##! this generates the matrix which we used to represent the number of peaks as a funtion of N and K
-##! In the presentation we had 100 runs each. 
-numberMaxMatrix <- matrix(ncol=9, nrow=10)
-colnames(numberMaxMatrix)<-paste(rep("N",9), 2:10)
-rownames(numberMaxMatrix)<-paste(rep("K",10), 0:9)
+#this generates the matrix which we used to represent the number of peaks as a funtion of N and K
+#In the presentation we had 100 runs each. 
 for (g in 2:10)
   {
 
@@ -24,7 +21,8 @@ for (g in 2:10)
 
   }
 }
-##!The returned matrix is used in the test below
+
+#The returned matrix is used in the test below
 test_that("peaks increase with k",{
   v <-apply(numberMaxMatrix, 2, function(x){  identical(order(x) , c(1:length(x)))   }
   )
@@ -36,9 +34,7 @@ test_that("peaks increase with k",{
 
 
 test_that("Interaction Matrix Shape", {
-  ##! By induction, if it works for the few first, should work for all,
-  ##! unless memory issues. And if we go beyond, say, 10 or 12, it can
-  ##! take long in slow machines.
+
   for(g in 1:10) {
     for(k in 0:(g-1))
       for( a in 1:10){
